@@ -1,30 +1,33 @@
 class Ballot
-	def initialize(raw_ballots, header, ballot_type, candidates_to_elect)
-		@votes = import_votes(raw_ballots, header, ballot_type)
+	def initialize(raw_ballots, header, gender, age, ballot_type, candidates_to_elect)
+		@votes = import_votes(raw_ballots, header, gender, age, ballot_type)
 		@total_votes = @votes.count
 		@formal_votes = count_formal
-		@current_total = @formal_votes.to_f
+		@current_total = @formal_votes
 		@current_exhaust = 0.0
 		@candidates_to_elect = candidates_to_elect.to_i
-		@candidates = import_candidates(raw_ballots,header)
+		@candidates = import_candidates(raw_ballots,header, gender, age)
 		@cur_candidate_count = @candidates.count
 		@candidates_elected = 0
 		@has_winner = false
 		@quota = calculate_quota
 		@ballot_type = ballot_type
+		@female_needed = 0
+		@young_labor_needed = 0
 	end
 
-	attr_reader :votes, :total_votes, :formal_votes, :candidates, :has_winner, :first_pref_results, :current_total, :cur_candidate_count, :quota, :candidates_elected, :candidates_to_elect, :current_exhaust, :ballot_type
-	attr_writer :has_winner, :current_total, :cur_candidate_count, :quota, :candidates_elected, :current_exhaust
+	attr_accessor :female_needed, :young_labor_needed
+	attr_reader :votes, :total_votes, :formal_votes, :candidates, :has_winner, :first_pref_results, :current_total, :cur_candidate_count, :quota, :candidates_elected, :candidates_to_elect, :current_exhaust, :ballot_type, :lost_from_fraction
+	attr_writer :has_winner, :current_total, :cur_candidate_count, :quota, :candidates_elected, :current_exhaust, :lost_from_fraction
 
 	def calculate_quota
 		return (@current_total / (@candidates_to_elect + 1).to_f)
 	end
 
-	def import_votes(raw_ballots, header, ballot_type)
+	def import_votes(raw_ballots, header, gender, age, ballot_type)
 		votes = []
 		raw_ballots.each_with_index do |b, i|
-			if header && i == 0
+			if i == header - 1 || i == gender - 1 || i == age - 1
 				next
 			end
 			votes << BallotPaper.new(b, ballot_type)
@@ -42,7 +45,7 @@ class Ballot
 		return formal
 	end
 
-	def import_candidates(raw_ballots,header)
+	def import_candidates(raw_ballots,header,gender, age)
 		candidates = []
 		can_count = 0
 		@votes.each do |b|
@@ -52,13 +55,22 @@ class Ballot
 		end
 
 		if header
-			raw_ballots[0].each_with_index do |c, i|
+			raw_ballots[header - 1].each_with_index do |c, i|
 				candidates[i] = Candidate.new(i, @votes, @formal_votes,c)
 			end
 
 		else
 			can_count.times do |c|
 				candidates[c] = Candidate.new(c,@votes, @formal_votes)
+			end
+		end
+
+		candidates.each_with_index do |c, i|
+			if gender
+				c.female = raw_ballots[gender - 1][i].to_b
+			end
+			if age
+				c.young_labor = raw_ballots[age - 1][i].to_b
 			end
 		end
 		
@@ -117,10 +129,14 @@ class Candidate
 		@excluded = false
 		@elected = false
 		@elected_order = 0
+		@female = nil
+		@young_labor = false
+		@distributed = false
 	end
 
-	attr_reader :position, :first_pref, :first_pref_pc, :cur_votes, :excluded, :name, :elected_order, :elected
-	attr_writer :cur_votes, :excluded, :elected_order, :elected
+	attr_reader :position, :first_pref, :first_pref_pc, :cur_votes, :excluded, :name, :elected_order, :elected, :female, :young_labor
+	attr_writer :cur_votes, :excluded, :elected_order, :elected, :female, :young_labor
+	attr_accessor :distributed
 
 	def set_name(pos,cname)
 		if cname
