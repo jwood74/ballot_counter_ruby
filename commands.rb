@@ -277,7 +277,7 @@ def display_final_result(ballot)
 
 	display_candidates.each do |c|
 		if c.elected
-			puts "#{c.elected_order} - #{c.name}"
+			puts "#{c.elected_order} - #{c.name} with #{c.cur_votes.round(2)} votes"
 		end
 	end
 end

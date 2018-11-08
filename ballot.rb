@@ -21,7 +21,7 @@ class Ballot
 	attr_writer :has_winner, :current_total, :cur_candidate_count, :quota, :candidates_elected, :current_exhaust, :lost_from_fraction
 
 	def calculate_quota
-		return (@current_total / (@candidates_to_elect + 1).to_f)
+		return (@current_total / (@candidates_to_elect + 1).to_f + 1)
 	end
 
 	def import_votes(raw_ballots, header, gender, age, ballot_type)
