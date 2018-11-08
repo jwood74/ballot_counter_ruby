@@ -25,7 +25,7 @@ def print_current_votes(ballot)
 		if c.excluded && c.distributed
 			next
 		end		# 
-		puts "	Candidate #{c.name} is on #{c.cur_votes.round(3)} votes. #{c.young_labor ? '(YL)' : '' } #{' ## elected ' + c.elected_order.to_s + ' ##' unless c.elected == false}"
+		puts "	Candidate #{c.name} is on #{c.cur_votes.round(3)} votes. #{c.young ? '(YL)' : '' } #{' ## elected ' + c.elected_order.to_s + ' ##' unless c.elected == false}"
 				# (or #{(c.cur_votes.to_f / ballot.current_total * 100).round(2)}%)
 	end
 	puts "#{ballot.current_total.round(0)} votes remaining in count. #{ballot.current_exhaust.round(1)} votes have exhausted. #{ballot.cur_candidate_count} candidates remaining"
@@ -218,13 +218,13 @@ def check_for_aa(ballot)
 				 		c.elected = true
 				 		ballot.candidates_elected += 1
 						c.elected_order = ballot.candidates_elected
-				 		puts "## AA Elected - #{c.name} - Gender"
+				 		puts "** AA Elected - #{c.name} - Gender **"
 				 	end
 				 end
 			elsif (ballot.female_needed - f_have) >= (ballot.candidates_to_elect - ballot.candidates_elected)
 				 ballot.candidates.each do |c|
 				 	if c.female == false && c.elected == false && c.excluded == false
-				 		puts "## AA Excluded - #{c.name} - Gender"
+				 		puts "** AA Excluded - #{c.name} - Gender **"
 				 		c.excluded = true
 				 	end
 				 end
@@ -232,32 +232,32 @@ def check_for_aa(ballot)
 		end
 	end
 
-	if ballot.young_labor_needed > 0
+	if ballot.young_needed > 0
 		yl_have = 0
 		yl_remaining = 0
 		ballot.candidates.each do |c|
-			if c.young_labor && c.elected
+			if c.young && c.elected
 				yl_have += 1
-			elsif c.young_labor && c.elected == false && c.excluded == false
+			elsif c.young && c.elected == false && c.excluded == false
 				yl_remaining += 1
 			end
 		end
 
-		if (ballot.young_labor_needed - yl_have) > 0
-			if yl_remaining == (ballot.young_labor_needed - yl_have)
+		if (ballot.young_needed - yl_have) > 0
+			if yl_remaining == (ballot.young_needed - yl_have)
 				 ## all remaining females elected
 				 ballot.candidates.each do |c|
-				 	if c.young_labor && c.elected == false && c.excluded == false
+				 	if c.young && c.elected == false && c.excluded == false
 				 		c.elected = true
 				 		ballot.candidates_elected += 1
 						c.elected_order = ballot.candidates_elected
-				 		puts "## AA Elected - #{c.name} - Young Labor"
+				 		puts "** AA Elected - #{c.name} - Young **"
 				 	end
 				 end
-			elsif (ballot.young_labor_needed - yl_have) >= (ballot.candidates_to_elect - ballot.candidates_elected)
+			elsif (ballot.young_needed - yl_have) >= (ballot.candidates_to_elect - ballot.candidates_elected)
 				 ballot.candidates.each do |c|
-				 	if c.young_labor == false && c.elected == false && c.excluded == false
-				 		puts "## AA Excluded - #{c.name} - Young Labor"
+				 	if c.young == false && c.elected == false && c.excluded == false
+				 		puts "** AA Excluded - #{c.name} - Young **"
 				 		c.excluded = true
 				 	end
 				 end

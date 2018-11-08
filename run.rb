@@ -24,7 +24,7 @@ puts "There are #{ballot.candidates.count} candidates"
 puts
 
 ballot.female_needed = 4
-ballot.young_labor_needed = 1
+ballot.young_needed = 1
 
 #check first preference votes
 # print_first_preference(ballot)

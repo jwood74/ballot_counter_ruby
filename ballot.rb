@@ -13,10 +13,10 @@ class Ballot
 		@quota = calculate_quota
 		@ballot_type = ballot_type
 		@female_needed = 0
-		@young_labor_needed = 0
+		@young_needed = 0
 	end
 
-	attr_accessor :female_needed, :young_labor_needed
+	attr_accessor :female_needed, :young_needed
 	attr_reader :votes, :total_votes, :formal_votes, :candidates, :has_winner, :first_pref_results, :current_total, :cur_candidate_count, :quota, :candidates_elected, :candidates_to_elect, :current_exhaust, :ballot_type, :lost_from_fraction
 	attr_writer :has_winner, :current_total, :cur_candidate_count, :quota, :candidates_elected, :current_exhaust, :lost_from_fraction
 
@@ -70,7 +70,7 @@ class Ballot
 				c.female = raw_ballots[gender - 1][i].to_b
 			end
 			if age
-				c.young_labor = raw_ballots[age - 1][i].to_b
+				c.young = raw_ballots[age - 1][i].to_b
 			end
 		end
 		
@@ -130,12 +130,12 @@ class Candidate
 		@elected = false
 		@elected_order = 0
 		@female = nil
-		@young_labor = false
+		@young = false
 		@distributed = false
 	end
 
-	attr_reader :position, :first_pref, :first_pref_pc, :cur_votes, :excluded, :name, :elected_order, :elected, :female, :young_labor
-	attr_writer :cur_votes, :excluded, :elected_order, :elected, :female, :young_labor
+	attr_reader :position, :first_pref, :first_pref_pc, :cur_votes, :excluded, :name, :elected_order, :elected, :female, :young
+	attr_writer :cur_votes, :excluded, :elected_order, :elected, :female, :young
 	attr_accessor :distributed
 
 	def set_name(pos,cname)
